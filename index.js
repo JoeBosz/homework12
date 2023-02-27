@@ -36,7 +36,14 @@ inquirer.prompt(questions).the((response) => {
     });
     promptViewQuestions(questions);
   } else if (response.OpeningMenu === "View all roles") {
-    db.query("SELECT role.id, role.title, role.salary, department.name FROM role JOIN departments ON role.department_id = deprtmentss.id", (err, results) => {
+    db.query("SELECT role.id, role.title, role.salary, department.name FROM role JOIN departments ON role.department_id = deprtmentss.id", 
+    (err, results) => {
+      console.table(results);
+    });
+    promptViewQuestions(questions);
+  } else if (response.OpeningMenu === "View all employees") {
+    db.query("SELECT role.id, role.title, role.salary, departments.name FROM role JOIN departments ON role.department_id = departments.id", 
+    (err, results) => {
       console.table(results);
     });
     promptViewQuestions(questions);
