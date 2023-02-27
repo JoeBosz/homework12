@@ -42,10 +42,11 @@ inquirer.prompt(questions).the((response) => {
     });
     promptViewQuestions(questions);
   } else if (response.OpeningMenu === "View all employees") {
-    db.query("SELECT role.id, role.title, role.salary, departments.name FROM role JOIN departments ON role.department_id = departments.id", 
+    db.query("SELECT e.id,CONCAT(e.first_name, ' ', e.last_name) AS 'Employee, INFULL( CONCAT(m.first_name, ' ', m.last_name), 'Executive') AS 'Manager', role.title AS title, role.salary AS salary, department.name AS department FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id ", 
     (err, results) => {
       console.table(results);
-    });
+    }
+    );
     promptViewQuestions(questions);
   }
     
