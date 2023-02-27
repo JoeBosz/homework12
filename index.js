@@ -1,7 +1,7 @@
-const mysql = require("mysql2");
-const inquirer = require("inquirer");
-require("dotenv").config();
-
+import mysql from "mysql2";
+import inquirer from "inquirer";
+import dotenv from "dotenv";
+import { questions } from "./employeeqs.js";
 
 const connection = mysql.createConnection(
   {
@@ -34,9 +34,16 @@ inquirer.prompt(questions).the((response) => {
       }
       console.table(results);
     });
+    promptViewQuestions(questions);
+  } else if (response.OpeningMenu === "View all roles") {
+    db.query("SELECT role.id, role.title, role.salary, department.name FROM role JOIN departments ON role.department_id = deprtmentss.id", (err, results) => {
+      console.table(results);
+    });
+    promptViewQuestions(questions);
+  }
     
 
-})
+});
 
 // const questions = [
 //   {
@@ -177,8 +184,3 @@ inquirer.prompt(questions).the((response) => {
 // createManager();
 
 
-connection.connect((err) => {
-  if (err) throw err;
-  console.log("connected");
-  //Execute main app function here
-});
