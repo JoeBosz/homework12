@@ -25,6 +25,19 @@ connection.query(
   }
 );
 
+inquirer.prompt(questions).the((response) => {
+  if (response.OpeningMenu === "I am done") {
+  } else if (response.OpeningMenu === "View all departments") {
+    db.query("SELECT * FROM department", (err, results) => {
+      if (err) {
+        console.log(err);
+      }
+      console.table(results);
+    });
+    
+
+})
+
 // const questions = [
 //   {
 //     name: "name",
