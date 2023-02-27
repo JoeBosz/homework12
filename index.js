@@ -25,7 +25,7 @@ connection.query(
   }
 );
 
-inquirer.prompt(questions).the((response) => {
+inquirer.prompt(questions).then((response) => {
   if (response.OpeningMenu === "I am done") {
   } else if (response.OpeningMenu === "View all departments") {
     db.query("SELECT * FROM department", (err, results) => {
@@ -48,10 +48,21 @@ inquirer.prompt(questions).the((response) => {
     }
     );
     promptViewQuestions(questions);
+  } else if (response.OpeningMenu === "Add a department") {
+    promptDeptQuestions(addDepartment);
+  } else if (response.OpeningMenu === "Add a role") {
+    promptRoleQuestions(addRole);
+  } else if (response.OpeningMenu === "Add an employee") {
+    promptEmployeeQuestions(addEmployee);
+  } else if (response.OpeningMenu === "Update an employee role") {
+    promptUpdateQuestions(UpdateRole);
+  } else if (response.OpeningMenu === "View employees by department") {
+    promptDeptQuestions(viewByDept);
   }
+});
     
 
-});
+
 
 // const questions = [
 //   {
