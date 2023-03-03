@@ -111,38 +111,6 @@ function promptViewQuestions(questionsRole){
 
 
 
-function questionsSetRedirect(response) {
-  if (response.OpeningMenu === "I am done") {
-  } else if (response.OpeningMenu === "View all departments") {
-    db.query("SELECT * FROM department", (err, results) => {
-      console.table(results);
-    });
-    promptViewQuestions(questions);
-  } else if (response.OpeningMenu === "View all roles") {
-    db.query("SELECT role.id, role.title, role.salary, department.name FROM role JOIN departments ON role.department_id = deprtmentss.id", 
-    (err, results) => {
-      console.table(results);
-    });
-    promptViewQuestions(questions);
-  } else if (response.OpeningMenu === "View all employees") {
-    db.query("SELECT e.id,CONCAT(e.first_name, ' ', e.last_name) AS 'Employee, INFULL( CONCAT(m.first_name, ' ', m.last_name), 'Executive') AS 'Manager', role.title AS title, role.salary AS salary, department.name AS department FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id ", 
-    (err, results) => {
-      console.table(results);
-    }
-    );
-    promptViewQuestions(questions);
-  } else if (response.OpeningMenu === "Add a department") {
-    promptDeptQuestions(addDepartment);
-  } else if (response.OpeningMenu === "Add a role") {
-    promptRoleQuestions(addRole);
-  } else if (response.OpeningMenu === "Add an employee") {
-    promptEmployeeQuestions(addEmployee);
-  } else if (response.OpeningMenu === "Update an employee role") {
-    promptUpdateQuestions(UpdateRole);
-  } else if (response.OpeningMenu === "View employees by department") {
-    promptDeptQuestions(viewByDept);
-  }
-}
 
 
 
