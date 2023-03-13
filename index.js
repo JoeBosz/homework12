@@ -1,7 +1,14 @@
 import mysql from "mysql2";
 import inquirer from "inquirer";
 import dotenv from "dotenv";
-import { questions } from "./employeeqs.js";
+import {
+  questions,
+  addDepartment,
+  addEmployee,
+  addRole,
+  UpdateRole,
+  viewByDept,
+} from "./employeeqs.js";
 
 const connection = mysql.createConnection(
   {
@@ -15,102 +22,92 @@ const connection = mysql.createConnection(
   console.log(`Connected to the employees_db database.`)
 );
 
-connection.query(
-  'SELECT * FROM `department` ',
-  function(err, results) {
-    if (err) {
-      console.error(err)
-    }
-    console.table(results); // results contains rows returned by server
-  }
-);
 
-inquirer.prompt(questions).then((response) => {
-  if (response.OpeningMenu === "I am done") {
-  } else if (response.OpeningMenu === "View all departments") {
-    db.query("SELECT * FROM department", (err, results) => {
-      if (err) {
-        console.log(err);
-      }
-      console.table(results);
-    });
-    promptViewQuestions(questions);
-  } else if (response.OpeningMenu === "View all roles") {
-    db.query("SELECT role.id, role.title, role.salary, department.name FROM role JOIN departments ON role.department_id = deprtmentss.id", 
-    (err, results) => {
-      console.table(results);
-    });
-    promptViewQuestions(questions);
-  } else if (response.OpeningMenu === "View all employees") {
-    db.query("SELECT e.id,CONCAT(e.first_name, ' ', e.last_name) AS 'Employee, INFULL( CONCAT(m.first_name, ' ', m.last_name), 'Executive') AS 'Manager', role.title AS title, role.salary AS salary, department.name AS department FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id ", 
-    (err, results) => {
-      console.table(results);
-    }
-    );
-    promptViewQuestions(questions);
-  } else if (response.OpeningMenu === "Add a department") {
-    promptDeptQuestions(addDepartment);
-  } else if (response.OpeningMenu === "Add a role") {
-    promptRoleQuestions(addRole);
-  } else if (response.OpeningMenu === "Add an employee") {
-    promptEmployeeQuestions(addEmployee);
-  } else if (response.OpeningMenu === "Update an employee role") {
-    promptUpdateQuestions(UpdateRole);
-  } else if (response.OpeningMenu === "View employees by department") {
-    promptDeptQuestions(viewByDept);
-  }
-});
-    
-function promptDeptQuestions(questionDept){
+
+
+function promptDeptQuestions(questionDept) {
   inquirer.prompt(questionDept).then((response) => {
-    db.query(
-      `INSERT INTO department (name) VALUE ('$response.departmentName')`
+    connection.query(
+      `INSERT INTO department (name) VALUE ('${response.departmentName}')`
     );
     promptViewQuestions(questions);
   });
 }
 
-function promptRoleQuestions(questionRole){
+function promptRoleQuestions(questionRole) {
   inquirer.prompt(questionRole).then((response) => {
-    db.query(
-      `INSERT INTO role (title, salary, department_id) VALUE ('$response.roleName', '{$response.roleSalary'}, {'$response.roleDeptId'})`
+    connection.query(
+      `INSERT INTO role (title, salary, department_id) VALUE ('${response.roleTitle}', ${response.roleSalary}, ${response.roleDeptID})`
     );
     promptViewQuestions(questions);
   });
 }
 
-function promptEmployeeQuestions(questionRole){
+function promptEmployeeQuestions(questionRole) {
   inquirer.prompt(questionRole).then((response) => {
-    db.query(
-      `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ('$response.firstName', '{$response.lastName'}, {'$response.roleId'}, {'$response.managerId'})`
+    connection.query(
+      `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ('${response.firstName}', '${response.lastName}',${response.roleID}, ${response.managerID})`
     );
     promptViewQuestions(questions);
   });
 }
 
-function promptUpdateQuestions(questionRole){
+function promptUpdateQuestions(questionRole) {
   inquirer.prompt(questionRole).then((response) => {
-    db.query(
-      `UPDATE employee SET role_id = ${response.updateRole} WHERE first_name = '{$response.updateFirstName}' AND last_name = '{$response.updateLastName}'`
+    connection.query(
+      `UPDATE employee SET role_id = ${response.updateRole} WHERE KTid = '${response.updateID}'`
     );
     promptViewQuestions(questions);
   });
 }
 
-function promptViewQuestions(questionsRole){
+function promptViewQuestions(questionsRole) {
   inquirer.prompt(questionsRole).then((response) => {
-    db.query(
-      `SELECT e.id,CONCAT(e.first_name, ' ', e.last_name) AS 'Employee, INFULL( CONCAT(m.first_name, ' ', m.last_name), "Executive") AS 'Manager', role.title AS title, role.salary AS salary, department.name AS department FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id WHERE department.name = '${response.viewDeptID}'`,
-      (err, results) => {
+    if (response.OpeningMenu === "I am done") {
+    }
+    if (response.OpeningMenu === "View All Departments") {
+      connection.query("SELECT * FROM department", (err, results) => {
+        if (err) {
+          console.log(err);
+        }
         console.table(results);
-      }
+      });
+      promptViewQuestions(questions);
+    }
+    if (response.OpeningMenu === "View All Roles") {
+      connection.query(
+        "SELECT role.id, role.title, role.salary, department.name FROM role LEFT JOIN department ON role.department_id = department.id",
+        (err, results) => {
+          console.table(results);
+        }
       );
       promptViewQuestions(questions);
-    });
-  }
+    }
+    if (response.OpeningMenu === "View All Employees") {
+      connection.query(
+        "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id; ",
+        (err, results) => {
+          console.table(results);
+        }
+      );
+      promptViewQuestions(questions);
+    }
+    if (response.OpeningMenu === "Add A Department") {
+      promptDeptQuestions(addDepartment);
+    }
+    if (response.OpeningMenu === "Add A Role") {
+      promptRoleQuestions(addRole);
+    }
+    if (response.OpeningMenu === "Add An Employee") {
+      promptEmployeeQuestions(addEmployee);
+    }
+    if (response.OpeningMenu === "Update An Employee Role") {
+      promptUpdateQuestions(UpdateRole);
+    }
+    if (response.OpeningMenu === "View employees by department") {
+      promptDeptQuestions(viewByDept);
+    }
+  });
+}
 
-
-
-
-
-
+promptViewQuestions(questions);
