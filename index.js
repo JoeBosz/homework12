@@ -55,7 +55,7 @@ function promptEmployeeQuestions(questionRole) {
 function promptUpdateQuestions(questionRole) {
   inquirer.prompt(questionRole).then((response) => {
     connection.query(
-      `UPDATE employee SET role_id = ${response.updateRole} WHERE KTid = '${response.updateID}'`
+      `UPDATE employee SET role_id = ${response.updateRole} WHERE id = '${response.updateID}'`
     );
     promptViewQuestions(questions);
   });
