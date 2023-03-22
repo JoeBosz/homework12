@@ -1,4 +1,4 @@
-const questions = [
+learconst questions = [
   {
     type: "list",
     name: "OpeningMenu",
